@@ -1,2 +1,2 @@
 # CryptoWallet
-Simple cryptocurrency wallet
+Creating Simple cryptocurrency wallet using Xamarin Forms Shell and MVVM
