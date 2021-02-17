@@ -41,7 +41,7 @@ namespace CryptoWallet.Common.Models
             return new List<Coin>
             {
                 new Coin("Bitcoin", "BTC", "BTC.png", "#850CDB"),
-                new Coin("Bitcoin Cash", "BTH", "BTH.png", "#EF4E5B"),
+                new Coin("Bitcoin Cash", "BCH", "BCH.png", "#EF4E5B"),
                 new Coin("Dash", "DASH", "DASH.png", "#8A709C"),
                 new Coin("Eos", "EOS", "EOS.png", "#7E8E81"),
                 new Coin("Ethereum", "ETH", "ETH.png", "#BDACAC"),
