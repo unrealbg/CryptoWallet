@@ -14,5 +14,7 @@ namespace CryptoWallet.Common.Navigation
         Task PopAsync();
 
         Task InsertAsRoot<TViewModel>(string parameters = null) where TViewModel : BaseViewModel;
+
+        Task GoBackAsync();
     }
 }

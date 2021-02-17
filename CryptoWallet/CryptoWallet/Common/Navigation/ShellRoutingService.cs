@@ -16,6 +16,11 @@ namespace CryptoWallet.Common.Navigation
             return Shell.Current.Navigation.PopAsync();
         }
 
+        public Task GoBackAsync()
+        {
+            return Shell.Current.GoToAsync("..");
+        }
+
         public Task InsertAsRoot<TViewModel>(string parameters = null) where TViewModel : BaseViewModel
         {
             return GoToAsync<TViewModel>("//", parameters);
