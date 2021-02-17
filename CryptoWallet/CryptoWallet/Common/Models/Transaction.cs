@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
+using CryptoWallet.Common.Database;
+
 namespace CryptoWallet.Common.Models
 {
-    public class Transaction
+    public class Transaction : BaseDatabaseItem
     {
         public string Symbol { get; set; }
 
