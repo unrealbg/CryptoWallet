@@ -10,6 +10,8 @@ using System.Windows.Input;
 using CryptoWallet.Common.Base;
 using CryptoWallet.Common.Controllers;
 using CryptoWallet.Common.Models;
+using CryptoWallet.Common.Navigation;
+using CryptoWallet.Modules.AddTransaction;
 
 using Microcharts;
 
@@ -22,10 +24,12 @@ namespace CryptoWallet.Modules.Wallet
     public class WalletViewModel : BaseViewModel
     {
         private IWalletController walletController;
+        private INavigationService navigationService;
 
-        public WalletViewModel(IWalletController walletController)
+        public WalletViewModel(IWalletController walletController, INavigationService navigationService)
         {
             this.walletController = walletController;
+            this.navigationService = navigationService;
             this.Assets = new ObservableCollection<Coin>();
             this.LatestTransactions = new ObservableCollection<Transaction>();
         }
@@ -145,7 +149,7 @@ namespace CryptoWallet.Modules.Wallet
 
         private async Task AddNewTransaction()
         {
-            //TODO:
+            await this.navigationService.PushAsync<AddTransactionViewModel>();
         }
 
 
