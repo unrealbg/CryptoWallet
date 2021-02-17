@@ -83,7 +83,7 @@ namespace CryptoWallet.Modules.Transactions
 
         private async Task TransactionSelected()
         {
-            await this.navigationService.PushAsync<AddTransactionViewModel>("id=1");
+            await this.navigationService.PushAsync<AddTransactionViewModel>($"id={this.SelectedTransaction.Id}");
         }
 
         public ICommand TradeCommand { get => new Command(async () => await PerformNavigation()); }
