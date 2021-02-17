@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -16,7 +17,7 @@ using Xamarin.Forms;
 
 namespace CryptoWallet.Modules.AddTransaction
 {
-    [QueryProperty("ID", "id")]
+    [QueryProperty("Id", "id")]
     public class AddTransactionViewModel : BaseViewModel
     {
         private IRepository<Transaction> repository;
@@ -30,11 +31,24 @@ namespace CryptoWallet.Modules.AddTransaction
             this.repository = repository;
             this.dialogMessage = dialogMessage;
             this.navigationService = navigationService;
-            this.TransactionDate = DateTime.UtcNow;
-            this.IsDeposit = true;
             this.AvailableAssets = new ObservableCollection<Coin>(Coin.GetAvailableAssets());
-            this.Amount = new ValidatableObject<decimal>();
-            this.Amount.Validations.Add(new NonNegativeRule { ValidationMessage = "Please enter amount greater than zero" });
+            AddValidations();
+        }
+
+        public override async Task InitializeAsync(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(this.Id) || !int.TryParse(this.Id, out int transactionId))
+            {
+                this.TransactionDate = DateTime.UtcNow;
+                this.IsDeposit = true;
+                return;
+            }
+
+            Transaction transaction = await this.repository.GetById(transactionId);
+            this.IsDeposit = transaction.Status == Constants.TRANSACTION_DEPOSITED;
+            this.Amount.Value = transaction.Amount;
+            this.TransactionDate = transaction.TransactionDate;
+            this.SelectedCoin = Coin.GetAvailableAssets().First(x => x.Symbol == transaction.Symbol);
         }
 
         public bool IsDeposit
@@ -47,6 +61,7 @@ namespace CryptoWallet.Modules.AddTransaction
         private string id;
         public string Id
         {
+            get => this.id;
             set
             {
                 this.id = Uri.UnescapeDataString(value);
@@ -88,6 +103,18 @@ namespace CryptoWallet.Modules.AddTransaction
 
         public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction() , () => IsNotBusy); }
 
+        public ICommand GoBackCommand { get => new Command(async () => await GoBack()); }
+
+        private async Task GoBack()
+        {
+            var shouldGoBack = await this.dialogMessage.DisplayAlert("Confirm", "Are you sure you want to navigate back? Any unsaved changes will be lost",
+                                                                "OK", "Cancel");
+            if (shouldGoBack)
+            {
+                await this.navigationService.GoBackAsync();
+            }
+        }
+
         private async Task AddTransaction()
         {
             this.Amount.Validate();
@@ -116,10 +143,17 @@ namespace CryptoWallet.Modules.AddTransaction
                 Amount = this.Amount.Value,
                 TransactionDate = this.TransactionDate,
                 Symbol = this.SelectedCoin.Symbol,
-                Status = this.IsDeposit == true ? Constants.TRANSACTION_DEPOSITED : Constants.TRANSACTION_WITHDRAWN
+                Status = this.IsDeposit == true ? Constants.TRANSACTION_DEPOSITED : Constants.TRANSACTION_WITHDRAWN,
+                Id = string.IsNullOrEmpty(this.Id) ? 0 : int.Parse(this.Id)
             };
 
             await this.repository.SaveAsync(transaction);
+        }
+
+        private void AddValidations()
+        {
+            this.Amount = new ValidatableObject<decimal>();
+            this.Amount.Validations.Add(new NonNegativeRule { ValidationMessage = "Please enter amount greater than zero" });
         }
     }
 }
