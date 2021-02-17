@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 using CryptoWallet.Common.Base;
+using CryptoWallet.Common.Database;
+using CryptoWallet.Common.Dialog;
 using CryptoWallet.Common.Models;
+using CryptoWallet.Common.Navigation;
 using CryptoWallet.Common.Validations;
 
 using Xamarin.Forms;
@@ -16,11 +19,19 @@ namespace CryptoWallet.Modules.AddTransaction
     [QueryProperty("ID", "id")]
     public class AddTransactionViewModel : BaseViewModel
     {
-
+        private IRepository<Transaction> repository;
+        private IDialogMessage dialogMessage;
+        private INavigationService navigationService;
         private bool isDeposit;
 
-        public AddTransactionViewModel()
+        public AddTransactionViewModel(IRepository<Transaction> repository, IDialogMessage dialogMessage, INavigationService navigationService)
         {
+
+            this.repository = repository;
+            this.dialogMessage = dialogMessage;
+            this.navigationService = navigationService;
+            this.TransactionDate = DateTime.UtcNow;
+            this.IsDeposit = true;
             this.AvailableAssets = new ObservableCollection<Coin>(Coin.GetAvailableAssets());
             this.Amount = new ValidatableObject<decimal>();
             this.Amount.Validations.Add(new NonNegativeRule { ValidationMessage = "Please enter amount greater than zero" });
@@ -75,16 +86,40 @@ namespace CryptoWallet.Modules.AddTransaction
         }
 
 
-        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction()); }
+        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction() , () => IsNotBusy); }
 
         private async Task AddTransaction()
         {
             this.Amount.Validate();
-            if (this.Amount.IsValid)
+            if (!this.amount.IsValid)
             {
                 return;
             }
+
+            if (this.SelectedCoin == null)
+            {
+                await this.dialogMessage.DisplayAlert("Error", "Please select a coin.", "OK");
+                return;
+            }
+
+            IsBusy = true;
+            await SaveNewTransaction();
+            await this.navigationService.PopAsync();
+
+            IsBusy = false;
         }
 
+        private async Task SaveNewTransaction()
+        {
+            Transaction transaction = new()
+            {
+                Amount = this.Amount.Value,
+                TransactionDate = this.TransactionDate,
+                Symbol = this.SelectedCoin.Symbol,
+                Status = this.IsDeposit == true ? Constants.TRANSACTION_DEPOSITED : Constants.TRANSACTION_WITHDRAWN
+            };
+
+            await this.repository.SaveAsync(transaction);
+        }
     }
 }
