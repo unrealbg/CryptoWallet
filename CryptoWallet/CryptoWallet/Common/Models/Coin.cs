@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Newtonsoft.Json;
-
 namespace CryptoWallet.Common.Models
 {
     public class Coin
@@ -14,21 +12,18 @@ namespace CryptoWallet.Common.Models
             this.HexColor = color;
         }
 
-        public Coin() { }
-
-        public string Name { get; set; }
-
-        public string Symbol { get; set; }
-
-        public double Price { get; set; }
+        public Coin()
+        {
+        }
 
         public decimal Amount { get; set; }
-
         public decimal DollarValue { get; set; }
-
-        public string ImageUrl { get; set; }
-
         public string HexColor { get; set; }
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
+
+        public double Price { get; set; }
+        public string Symbol { get; set; }
 
         public static List<Coin> GetAvailableAssets()
         {

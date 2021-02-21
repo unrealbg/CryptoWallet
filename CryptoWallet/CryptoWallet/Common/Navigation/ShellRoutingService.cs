@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using CryptoWallet.Common.Base;
 
@@ -11,11 +8,6 @@ namespace CryptoWallet.Common.Navigation
 {
     public class ShellRoutingService : INavigationService
     {
-        public Task PopAsync()
-        {
-            return Shell.Current.Navigation.PopAsync();
-        }
-
         public Task GoBackAsync()
         {
             return Shell.Current.GoToAsync("..");
@@ -26,6 +18,10 @@ namespace CryptoWallet.Common.Navigation
             return GoToAsync<TViewModel>("//", parameters);
         }
 
+        public Task PopAsync()
+        {
+            return Shell.Current.Navigation.PopAsync();
+        }
 
         public Task PushAsync<TViewModel>(string parameters = null) where TViewModel : BaseViewModel
         {

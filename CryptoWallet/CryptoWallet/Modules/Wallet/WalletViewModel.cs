@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -23,8 +20,16 @@ namespace CryptoWallet.Modules.Wallet
 {
     public class WalletViewModel : BaseViewModel
     {
-        private IWalletController walletController;
+        private ObservableCollection<Coin> assets;
+        private int coinsHeight;
+        private bool hasTransactions;
+        private bool isRefreshing;
+        private ObservableCollection<Transaction> latestTransactions;
         private INavigationService navigationService;
+        private decimal portfolioValue;
+        private Chart portfolioView;
+        private int transactionsHeight;
+        private IWalletController walletController;
 
         public WalletViewModel(IWalletController walletController, INavigationService navigationService)
         {
@@ -32,6 +37,84 @@ namespace CryptoWallet.Modules.Wallet
             this.navigationService = navigationService;
             this.Assets = new ObservableCollection<Coin>();
             this.LatestTransactions = new ObservableCollection<Transaction>();
+        }
+
+        public ICommand AddNewTransactionCommand { get => new Command(async () => await AddNewTransaction()); }
+
+        public ObservableCollection<Coin> Assets
+        {
+            get => this.assets;
+            set
+            {
+                SetProperty(ref this.assets, value);
+                if (this.assets == null)
+                {
+                    return;
+                }
+
+                this.CoinsHeight = this.assets.Count * 85;
+            }
+        }
+
+        public int CoinsHeight
+        {
+            get => this.coinsHeight;
+            set { SetProperty(ref this.coinsHeight, value); }
+        }
+
+        public bool HasTransactions
+        {
+            get => this.hasTransactions;
+            set { SetProperty(ref this.hasTransactions, value); }
+        }
+
+        public bool IsRefreshing
+        {
+            get => this.isRefreshing;
+            set { SetProperty(ref this.isRefreshing, value); }
+        }
+
+        public ObservableCollection<Transaction> LatestTransactions
+        {
+            get => this.latestTransactions;
+            set
+            {
+                SetProperty(ref this.latestTransactions, value);
+                if (this.latestTransactions == null)
+                {
+                    return;
+                }
+
+                this.HasTransactions = this.latestTransactions.Count > 0;
+
+                if (this.latestTransactions.Count == 0)
+                {
+                    this.TransactionsHeight = 430;
+                    return;
+                }
+
+                this.TransactionsHeight = this.latestTransactions.Count * 85;
+            }
+        }
+
+        public decimal PortfolioValue
+        {
+            get => this.portfolioValue;
+            set { SetProperty(ref this.portfolioValue, value); }
+        }
+
+        public Chart PortfolioView
+        {
+            get => portfolioView;
+            set { SetProperty(ref portfolioView, value); }
+        }
+
+        public ICommand RefreshAssetsCommand { get => new Command(async () => await InitializeAsync(true)); }
+
+        public int TransactionsHeight
+        {
+            get => this.transactionsHeight;
+            set { SetProperty(ref this.transactionsHeight, value); }
         }
 
         public override async Task InitializeAsync(object parameter)
@@ -57,9 +140,13 @@ namespace CryptoWallet.Modules.Wallet
             IsBusy = false;
         }
 
+        private async Task AddNewTransaction()
+        {
+            await this.navigationService.PushAsync<AddTransactionViewModel>();
+        }
+
         private void BuildChart(List<Coin> assets)
         {
-
             SKColor whiteColor = SKColor.Parse("ffffff");
             List<ChartEntry> entries = new();
             List<Coin> colors = Coin.GetAvailableAssets();
@@ -78,106 +165,5 @@ namespace CryptoWallet.Modules.Wallet
             chart.BackgroundColor = whiteColor;
             this.PortfolioView = chart;
         }
-
-        private Chart portfolioView;
-
-        public Chart PortfolioView
-        {
-            get => portfolioView;
-            set { SetProperty(ref portfolioView, value); }
-        }
-
-        private int coinsHeight;
-
-        public int CoinsHeight
-        {
-            get => this.coinsHeight;
-            set { SetProperty(ref this.coinsHeight, value); }
-        }
-
-        private ObservableCollection<Coin> assets;
-
-        public ObservableCollection<Coin> Assets
-        {
-            get => this.assets;
-            set
-            {
-                SetProperty(ref this.assets, value);
-                if (this.assets == null)
-                {
-                    return;
-                }
-
-                this.CoinsHeight = this.assets.Count * 85;
-            }
-        }
-
-        private int transactionsHeight;
-
-        public int TransactionsHeight
-        {
-            get => this.transactionsHeight;
-            set { SetProperty(ref this.transactionsHeight, value); }
-        }
-
-        private ObservableCollection<Transaction> latestTransactions;
-
-        public ObservableCollection<Transaction> LatestTransactions
-        {
-            get => this.latestTransactions;
-            set
-            {
-                SetProperty(ref this.latestTransactions, value);
-                if (this.latestTransactions == null)
-                {
-                    return;
-                }
-
-                this.HasTransactions = this.latestTransactions.Count > 0;
-                
-                if (this.latestTransactions.Count == 0)
-                {
-                    this.TransactionsHeight = 430;
-                    return;
-                }
-
-                this.TransactionsHeight = this.latestTransactions.Count * 85;
-            }
-        }
-
-        public ICommand AddNewTransactionCommand { get => new Command(async () => await AddNewTransaction()); }
-
-        private async Task AddNewTransaction()
-        {
-            await this.navigationService.PushAsync<AddTransactionViewModel>();
-        }
-
-
-        private bool hasTransactions;
-
-        public bool HasTransactions
-        {
-            get => this.hasTransactions;
-            set { SetProperty(ref this.hasTransactions, value); }
-        }
-
-
-        private decimal portfolioValue;
-
-        public decimal PortfolioValue
-        {
-            get => this.portfolioValue;
-            set { SetProperty(ref this.portfolioValue, value); }
-        }
-
-        private bool isRefreshing;
-
-        public bool IsRefreshing
-        {
-            get => this.isRefreshing;
-            set { SetProperty(ref this.isRefreshing, value); }
-        }
-
-        public ICommand RefreshAssetsCommand { get => new Command(async () => await InitializeAsync(true)); }
     }
 }

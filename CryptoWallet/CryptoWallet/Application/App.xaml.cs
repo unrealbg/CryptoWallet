@@ -26,6 +26,5 @@ namespace CryptoWallet
 
             MainPage = new AppShell();
         }
-
     }
 }

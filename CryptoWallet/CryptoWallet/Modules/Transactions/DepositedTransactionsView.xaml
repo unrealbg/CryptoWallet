@@ -6,7 +6,7 @@
         <ToolbarItem Text="Add"
                      Order="Primary"
                      Priority="0"
-                     Command="{Binding TradeCommand}"/>
+                     Command="{Binding TradeCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
@@ -15,7 +15,7 @@
                             SelectionMode="Single"
                             ItemTemplate="{StaticResource TransactionCell}"
                             SelectedItem="{Binding SelectedTransaction}"
-                            SelectionChangedCommand="{Binding TransactionSelectedCommand}"/>
+                            SelectionChangedCommand="{Binding TransactionSelectedCommand}" />
         </RefreshView>
     </ContentPage.Content>
 </ContentPage>

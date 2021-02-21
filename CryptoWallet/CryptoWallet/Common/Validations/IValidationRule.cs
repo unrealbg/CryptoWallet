@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CryptoWallet.Common.Validations
+﻿namespace CryptoWallet.Common.Validations
 {
     public interface IValidationRule<T>
     {

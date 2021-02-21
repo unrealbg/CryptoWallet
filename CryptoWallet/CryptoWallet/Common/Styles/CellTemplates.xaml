@@ -16,7 +16,7 @@
                             Source="{Binding Symbol, StringFormat='{0}.png'}"
                             HorizontalOptions="Center"
                             WidthRequest="34"
-                            HeightRequest="34"/>
+                            HeightRequest="34" />
                     <Label Grid.Column="2"
                             TextColor="{StaticResource InputText}"
                             FontAttributes="Bold"
@@ -43,14 +43,14 @@
                             TextColor="{StaticResource InputText}"
                             FontAttributes="Bold"
                             HorizontalOptions="End"
-                            Padding="0,0,10,0"/>
+                            Padding="0,0,10,0" />
                 </Grid>
             </Frame>
         </StackLayout>
     </DataTemplate>
 
     <!-- Transaction Cell -->
-        <DataTemplate x:Key="TransactionCell">
+    <DataTemplate x:Key="TransactionCell">
         <StackLayout>
             <Frame Margin="10,5,10,5"
                     Padding="13"
@@ -63,7 +63,7 @@
                             Source="{Binding StatusImageSource}"
                             HorizontalOptions="Center"
                             WidthRequest="34"
-                            HeightRequest="34"/>
+                            HeightRequest="34" />
                     <Label Grid.Column="2"
                            Text="{Binding DollarValue, StringFormat='$ {0:N2}'}"
                             TextColor="{StaticResource InputText}"
@@ -91,7 +91,7 @@
                                 <Setter Property="TextColor" Value="{StaticResource NegativeTrend}" />
                             </Trigger>
                         </Label.Triggers>
-                        </Label>
+                    </Label>
                     <Label Grid.Column="3"
                             Text="{Binding TransactionDate, StringFormat='{0:MMM dd, yyyy}'}"
                             TextColor="{StaticResource DarkGrayText}"
@@ -117,7 +117,7 @@
                             Aspect="AspectFit"
                             WidthRequest="36"
                             HeightRequest="36"
-                            Source="{Binding ImageUrl}"/>
+                            Source="{Binding ImageUrl}" />
                     <Label Grid.Column="1"
                             WidthRequest="120"
                             VerticalOptions="Center"
@@ -126,7 +126,7 @@
                             Text="{Binding Name}"
                             FontSize="18"
                             FontAttributes="Bold"
-                            TextColor="{StaticResource InputText}"/>
+                            TextColor="{StaticResource InputText}" />
                 </Grid>
             </Frame>
         </StackLayout>

@@ -1,16 +1,13 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace CryptoWallet.Common.Base
 {
     public abstract class BaseViewModel : ExtendedBindableObject
     {
-        public virtual Task InitializeAsync(object parameter)
-        {
-            return Task.CompletedTask;
-        }
-
         private bool _isBusy;
+
+        private bool _isNotBusy = true;
+
         public bool IsBusy
         {
             get => _isBusy;
@@ -23,7 +20,6 @@ namespace CryptoWallet.Common.Base
             }
         }
 
-        private bool _isNotBusy = true;
         public bool IsNotBusy
         {
             get => _isNotBusy;
@@ -34,6 +30,11 @@ namespace CryptoWallet.Common.Base
                     IsBusy = !_isNotBusy;
                 }
             }
+        }
+
+        public virtual Task InitializeAsync(object parameter)
+        {
+            return Task.CompletedTask;
         }
     }
 }

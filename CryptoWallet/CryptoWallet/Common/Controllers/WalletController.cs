@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using CryptoWallet.Common.Database;
@@ -12,9 +10,9 @@ namespace CryptoWallet.Common.Controllers
 {
     public class WalletController : IWalletController
     {
-        private IRepository<Transaction> transactionRepository;
-        private ICryptoService cryptoService;
         private List<Coin> cachedCoins = new();
+        private ICryptoService cryptoService;
+
         private List<Coin> defaultAssets = new()
         {
             new Coin
@@ -39,11 +37,15 @@ namespace CryptoWallet.Common.Controllers
                 DollarValue = 0
             },
         };
+
+        private IRepository<Transaction> transactionRepository;
+
         public WalletController(IRepository<Transaction> transactionRepository, ICryptoService cryptoService)
         {
             this.transactionRepository = transactionRepository;
             this.cryptoService = cryptoService;
         }
+
         public async Task<List<Coin>> GetCoins(bool forceReload = false)
         {
             List<Transaction> transactions = await LoadTransactions(forceReload);

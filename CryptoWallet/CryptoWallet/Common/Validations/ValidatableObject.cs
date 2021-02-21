@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using CryptoWallet.Common.Base;
 
@@ -9,9 +7,16 @@ namespace CryptoWallet.Common.Validations
 {
     public class ValidatableObject<T> : ExtendedBindableObject
     {
-        public List<IValidationRule<T>> Validations { get; }
-
+        private T _value;
         private List<string> errors;
+        private bool isValid;
+
+        public ValidatableObject()
+        {
+            this.isValid = true;
+            this.errors = new List<string>();
+            this.Validations = new List<IValidationRule<T>>();
+        }
 
         public List<string> Errors
         {
@@ -19,28 +24,18 @@ namespace CryptoWallet.Common.Validations
             set { SetProperty(ref this.errors, value); }
         }
 
-        private T _value;
-
-        public T Value
-        {
-            get => this._value;
-            set { SetProperty(ref this._value, value); }
-        }
-
-        private bool isValid;
-
         public bool IsValid
         {
             get => this.isValid;
             set { SetProperty(ref this.isValid, value); }
         }
 
+        public List<IValidationRule<T>> Validations { get; }
 
-        public ValidatableObject()
+        public T Value
         {
-            this.isValid = true;
-            this.errors = new List<string>();
-            this.Validations = new List<IValidationRule<T>>();
+            get => this._value;
+            set { SetProperty(ref this._value, value); }
         }
 
         public bool Validate()

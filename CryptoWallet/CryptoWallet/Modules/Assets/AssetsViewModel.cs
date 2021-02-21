@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -17,8 +14,9 @@ namespace CryptoWallet.Modules.Assets
 {
     public class AssetsViewModel : BaseViewModel
     {
-        private IWalletController walletController;
+        private ObservableCollection<Coin> assets;
         private INavigationService navigationService;
+        private IWalletController walletController;
 
         public AssetsViewModel(IWalletController walletController, INavigationService navigationService)
         {
@@ -27,13 +25,7 @@ namespace CryptoWallet.Modules.Assets
             this.Assets = new ObservableCollection<Coin>();
         }
 
-        public override async Task InitializeAsync(object parameter)
-        {
-            var assets = await this.walletController.GetCoins();
-            this.Assets = new ObservableCollection<Coin>(assets);
-        }
-
-        private ObservableCollection<Coin> assets;
+        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction()); }
 
         public ObservableCollection<Coin> Assets
         {
@@ -41,12 +33,15 @@ namespace CryptoWallet.Modules.Assets
             set { SetProperty(ref this.assets, value); }
         }
 
-        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction()); }
+        public override async Task InitializeAsync(object parameter)
+        {
+            var assets = await this.walletController.GetCoins();
+            this.Assets = new ObservableCollection<Coin>(assets);
+        }
 
         private async Task AddTransaction()
         {
             await this.navigationService.PushAsync<AddTransactionViewModel>();
         }
-
     }
 }

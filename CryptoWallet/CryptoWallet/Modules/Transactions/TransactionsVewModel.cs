@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -11,7 +9,6 @@ using CryptoWallet.Common.Controllers;
 using CryptoWallet.Common.Models;
 using CryptoWallet.Common.Navigation;
 using CryptoWallet.Modules.AddTransaction;
-using CryptoWallet.Modules.Wallet;
 
 using Xamarin.Forms;
 
@@ -19,9 +16,12 @@ namespace CryptoWallet.Modules.Transactions
 {
     public class TransactionsVewModel : BaseViewModel
     {
-        private IWalletController walletController;
-        private INavigationService navigationService;
         private string filter = string.Empty;
+        private bool isRefreshing;
+        private INavigationService navigationService;
+        private Transaction selectedTransaction;
+        private ObservableCollection<Transaction> transactions;
+        private IWalletController walletController;
 
         public TransactionsVewModel(IWalletController walletController, INavigationService navigationService)
         {
@@ -29,6 +29,30 @@ namespace CryptoWallet.Modules.Transactions
             this.navigationService = navigationService;
             this.Transactions = new ObservableCollection<Transaction>();
         }
+
+        public bool IsRefreshing
+        {
+            get => this.isRefreshing;
+            set { SetProperty(ref this.isRefreshing, value); }
+        }
+
+        public ICommand RefreshTransactionsCommand { get => new Command(async () => await RefreshTransactions()); }
+
+        public Transaction SelectedTransaction
+        {
+            get => selectedTransaction;
+            set { SetProperty(ref selectedTransaction, value); }
+        }
+
+        public ICommand TradeCommand { get => new Command(async () => await PerformNavigation()); }
+
+        public ObservableCollection<Transaction> Transactions
+        {
+            get => this.transactions;
+            set { SetProperty(ref this.transactions, value); }
+        }
+
+        public ICommand TransactionSelectedCommand { get => new Command(async () => await TransactionSelected()); }
 
         public override async Task InitializeAsync(object parameter)
         {
@@ -48,50 +72,19 @@ namespace CryptoWallet.Modules.Transactions
             this.IsRefreshing = false;
         }
 
-        private ObservableCollection<Transaction> transactions;
-
-        public ObservableCollection<Transaction> Transactions
+        private async Task PerformNavigation()
         {
-            get => this.transactions;
-            set { SetProperty(ref this.transactions, value); }
+            await this.navigationService.PushAsync<AddTransactionViewModel>();
         }
-
-        private Transaction selectedTransaction;
-
-        public Transaction SelectedTransaction
-        {
-            get => selectedTransaction;
-            set { SetProperty(ref selectedTransaction, value); }
-        }
-
-        private bool isRefreshing;
-
-        public bool IsRefreshing
-        {
-            get => this.isRefreshing;
-            set { SetProperty(ref this.isRefreshing, value); }
-        }
-
-        public ICommand RefreshTransactionsCommand { get => new Command(async () => await RefreshTransactions()); }
 
         private async Task RefreshTransactions()
         {
             await GetTransactions();
         }
 
-        public ICommand TransactionSelectedCommand { get => new Command(async () => await TransactionSelected()); }
-
         private async Task TransactionSelected()
         {
             await this.navigationService.PushAsync<AddTransactionViewModel>($"id={this.SelectedTransaction.Id}");
         }
-
-        public ICommand TradeCommand { get => new Command(async () => await PerformNavigation()); }
-
-        private async Task PerformNavigation()
-        {
-            await this.navigationService.PushAsync<AddTransactionViewModel>();
-        }
-
     }
 }

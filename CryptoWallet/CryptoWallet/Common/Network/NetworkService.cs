@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +6,6 @@ using Newtonsoft.Json;
 
 namespace CryptoWallet.Common.Network
 {
-
     public class NetworkService : INetworkService
     {
         private HttpClient httpClient;
@@ -16,6 +13,11 @@ namespace CryptoWallet.Common.Network
         public NetworkService()
         {
             this.httpClient = new HttpClient();
+        }
+
+        public async Task DeleteAsync(string uri)
+        {
+            await this.httpClient.DeleteAsync(uri);
         }
 
         public async Task<TResult> GetAsync<TResult>(string uri)
@@ -48,11 +50,6 @@ namespace CryptoWallet.Common.Network
             TResult result = JsonConvert.DeserializeObject<TResult>(serialized);
 
             return result;
-        }
-
-        public async Task DeleteAsync(string uri)
-        {
-            await this.httpClient.DeleteAsync(uri);
         }
     }
 }

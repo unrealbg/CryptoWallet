@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -20,19 +18,67 @@ namespace CryptoWallet.Modules.AddTransaction
     [QueryProperty("Id", "id")]
     public class AddTransactionViewModel : BaseViewModel
     {
-        private IRepository<Transaction> repository;
+        private ValidatableObject<decimal> amount;
+        private ObservableCollection<Coin> availableAssets;
         private IDialogMessage dialogMessage;
-        private INavigationService navigationService;
+        private string id;
         private bool isDeposit;
+        private INavigationService navigationService;
+        private IRepository<Transaction> repository;
+        private Coin selectedCoin;
+
+        private DateTime transactionDate;
 
         public AddTransactionViewModel(IRepository<Transaction> repository, IDialogMessage dialogMessage, INavigationService navigationService)
         {
-
             this.repository = repository;
             this.dialogMessage = dialogMessage;
             this.navigationService = navigationService;
             this.AvailableAssets = new ObservableCollection<Coin>(Coin.GetAvailableAssets());
             AddValidations();
+        }
+
+        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction(), () => IsNotBusy); }
+
+        public ValidatableObject<decimal> Amount
+        {
+            get => this.amount;
+            set { SetProperty(ref this.amount, value); }
+        }
+
+        public ObservableCollection<Coin> AvailableAssets
+        {
+            get => this.availableAssets;
+            set { SetProperty(ref this.availableAssets, value); }
+        }
+
+        public ICommand GoBackCommand { get => new Command(async () => await GoBack()); }
+
+        public string Id
+        {
+            get => this.id;
+            set
+            {
+                this.id = Uri.UnescapeDataString(value);
+            }
+        }
+
+        public bool IsDeposit
+        {
+            get => this.isDeposit;
+            set { SetProperty(ref this.isDeposit, value); }
+        }
+
+        public Coin SelectedCoin
+        {
+            get => this.selectedCoin;
+            set { SetProperty(ref this.selectedCoin, value); }
+        }
+
+        public DateTime TransactionDate
+        {
+            get => this.transactionDate;
+            set { SetProperty(ref this.transactionDate, value); }
         }
 
         public override async Task InitializeAsync(object parameter)
@@ -49,70 +95,6 @@ namespace CryptoWallet.Modules.AddTransaction
             this.Amount.Value = transaction.Amount;
             this.TransactionDate = transaction.TransactionDate;
             this.SelectedCoin = Coin.GetAvailableAssets().First(x => x.Symbol == transaction.Symbol);
-        }
-
-        public bool IsDeposit
-        {
-            get => this.isDeposit;
-            set { SetProperty(ref this.isDeposit, value); }
-        }
-
-
-        private string id;
-        public string Id
-        {
-            get => this.id;
-            set
-            {
-                this.id = Uri.UnescapeDataString(value);
-            }
-        }
-
-        private ObservableCollection<Coin> availableAssets;
-
-        public ObservableCollection<Coin> AvailableAssets
-        {
-            get => this.availableAssets;
-            set { SetProperty(ref this.availableAssets, value); }
-        }
-
-        private Coin selectedCoin;
-
-        public Coin SelectedCoin
-        {
-            get => this.selectedCoin;
-            set { SetProperty(ref this.selectedCoin, value); }
-        }
-
-        private DateTime transactionDate;
-
-        public DateTime TransactionDate
-        {
-            get => this.transactionDate;
-            set { SetProperty(ref this.transactionDate, value); }
-        }
-
-        private ValidatableObject<decimal> amount;
-
-        public ValidatableObject<decimal> Amount
-        {
-            get => this.amount;
-            set { SetProperty(ref this.amount, value); }
-        }
-
-
-        public ICommand AddTransactionCommand { get => new Command(async () => await AddTransaction() , () => IsNotBusy); }
-
-        public ICommand GoBackCommand { get => new Command(async () => await GoBack()); }
-
-        private async Task GoBack()
-        {
-            var shouldGoBack = await this.dialogMessage.DisplayAlert("Confirm", "Are you sure you want to navigate back? Any unsaved changes will be lost",
-                                                                "OK", "Cancel");
-            if (shouldGoBack)
-            {
-                await this.navigationService.GoBackAsync();
-            }
         }
 
         private async Task AddTransaction()
@@ -136,6 +118,22 @@ namespace CryptoWallet.Modules.AddTransaction
             IsBusy = false;
         }
 
+        private void AddValidations()
+        {
+            this.Amount = new ValidatableObject<decimal>();
+            this.Amount.Validations.Add(new NonNegativeRule { ValidationMessage = "Please enter amount greater than zero" });
+        }
+
+        private async Task GoBack()
+        {
+            var shouldGoBack = await this.dialogMessage.DisplayAlert("Confirm", "Are you sure you want to navigate back? Any unsaved changes will be lost",
+                                                                "OK", "Cancel");
+            if (shouldGoBack)
+            {
+                await this.navigationService.GoBackAsync();
+            }
+        }
+
         private async Task SaveNewTransaction()
         {
             Transaction transaction = new()
@@ -148,12 +146,6 @@ namespace CryptoWallet.Modules.AddTransaction
             };
 
             await this.repository.SaveAsync(transaction);
-        }
-
-        private void AddValidations()
-        {
-            this.Amount = new ValidatableObject<decimal>();
-            this.Amount.Validations.Add(new NonNegativeRule { ValidationMessage = "Please enter amount greater than zero" });
         }
     }
 }

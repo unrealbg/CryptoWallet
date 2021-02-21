@@ -12,6 +12,6 @@
     <ContentPage.Content>
         <CollectionView ItemsSource="{Binding Assets}"
                         SelectionMode="None"
-                        ItemTemplate="{StaticResource AssetCell}"/>
+                        ItemTemplate="{StaticResource AssetCell}" />
     </ContentPage.Content>
 </ContentPage>

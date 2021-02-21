@@ -1,5 +1,4 @@
-﻿
-using SQLite;
+﻿using SQLite;
 
 namespace CryptoWallet.Common.Database
 {
@@ -8,5 +7,4 @@ namespace CryptoWallet.Common.Database
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
     }
-
 }
