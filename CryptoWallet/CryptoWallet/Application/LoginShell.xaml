@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:login="clr-namespace:CryptoWallet.Modules.Login"
+       xmlns:onboarding="clr-namespace:CryptoWallet.Modules.Onboarding"
+       xmlns:register="clr-namespace:CryptoWallet.Modules.Register"
+       x:Class="CryptoWallet.LoginShell">
+    <ShellContent Route="OnboardingViewModel"
+                  ContentTemplate="{DataTemplate onboarding:OnboardingView}" />
+    <ShellContent Route="LoginViewModel"
+                  ContentTemplate="{DataTemplate login:LoginView}" />
+    <ShellContent Route="RegisterViewModel"
+                  ContentTemplate="{DataTemplate register:RegisterView}" />
+</Shell>
