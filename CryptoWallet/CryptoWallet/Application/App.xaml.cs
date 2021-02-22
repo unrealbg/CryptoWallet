@@ -4,6 +4,7 @@ using Autofac;
 
 using CryptoWallet.Common.Database;
 using CryptoWallet.Common.Models;
+using CryptoWallet.Modules.Loading;
 
 using Xamarin.Forms;
 
@@ -24,7 +25,7 @@ namespace CryptoWallet
 
             Container = builder.Build();
 
-            MainPage = new AppShell();
+            MainPage = Container.Resolve<LoadingView>();
         }
     }
 }
