@@ -13,6 +13,16 @@ namespace CryptoWallet.Common.Navigation
             return Shell.Current.GoToAsync("..");
         }
 
+        public void GoToLoginFlow()
+        {
+            Application.Current.MainPage = new LoginShell();
+        }
+
+        public void GoToMainFlow()
+        {
+            Application.Current.MainPage = new AppShell();
+        }
+
         public Task InsertAsRoot<TViewModel>(string parameters = null) where TViewModel : BaseViewModel
         {
             return GoToAsync<TViewModel>("//", parameters);

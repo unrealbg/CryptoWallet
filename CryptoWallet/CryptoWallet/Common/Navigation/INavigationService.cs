@@ -8,6 +8,10 @@ namespace CryptoWallet.Common.Navigation
     {
         Task GoBackAsync();
 
+        void GoToLoginFlow();
+
+        void GoToMainFlow();
+
         Task InsertAsRoot<TViewModel>(string parameters = null) where TViewModel : BaseViewModel;
 
         Task PopAsync();
