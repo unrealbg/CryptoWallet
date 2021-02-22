@@ -3,6 +3,8 @@
     public class Constants
     {
         public const string CRYPTO_API = "https://api.coingecko.com/api/v3/";
+        public const string IS_USER_LOGGED_IN = "userLogged";
+        public const string SHOWN_ONBOARDING = "shownOnboarding";
         public const string TRANSACTION_DEPOSITED = "Deposited";
 
         public const string TRANSACTION_DEPOSITED_IMAGE = "deposited.png";
