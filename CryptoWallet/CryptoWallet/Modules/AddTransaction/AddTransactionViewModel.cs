@@ -11,6 +11,7 @@ using CryptoWallet.Common.Models;
 using CryptoWallet.Common.Navigation;
 using CryptoWallet.Common.Validations;
 
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace CryptoWallet.Modules.AddTransaction
@@ -136,13 +137,16 @@ namespace CryptoWallet.Modules.AddTransaction
 
         private async Task SaveNewTransaction()
         {
+            string userId = Preferences.Get(Constants.USER_ID, string.Empty);
+
             Transaction transaction = new()
             {
                 Amount = this.Amount.Value,
                 TransactionDate = this.TransactionDate,
                 Symbol = this.SelectedCoin.Symbol,
                 Status = this.IsDeposit == true ? Constants.TRANSACTION_DEPOSITED : Constants.TRANSACTION_WITHDRAWN,
-                Id = string.IsNullOrEmpty(this.Id) ? 0 : int.Parse(this.Id)
+                Id = string.IsNullOrEmpty(this.Id) ? 0 : int.Parse(this.Id),
+                UserId = userId
             };
 
             await this.repository.SaveAsync(transaction);

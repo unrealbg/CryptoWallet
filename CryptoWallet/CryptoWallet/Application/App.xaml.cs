@@ -22,6 +22,7 @@ namespace CryptoWallet
             builder.RegisterAssemblyTypes(dataAccess).AsImplementedInterfaces().AsSelf();
 
             builder.RegisterType<Repository<Transaction>>().As<IRepository<Transaction>>();
+            builder.RegisterType<Repository<User>>().As<IRepository<User>>();
 
             Container = builder.Build();
 
